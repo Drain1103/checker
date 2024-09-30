@@ -1,0 +1,63 @@
+const boardSize = 8;
+const gameBoard = document.getElementById('gameBoard');
+let selectedPiece = null;
+
+// Initialize the game board
+function initBoard() {
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+            const square = document.createElement('div');
+            square.classList.add('square');
+
+            // Alternate between black and white squares
+            if ((row + col) % 2 === 0) {
+                square.classList.add('whiteSquare');
+            } else {
+                square.classList.add('blackSquare');
+                // Place initial pieces (red on top 3 rows, black on bottom 3 rows)
+                if (row < 3) {
+                    const piece = document.createElement('div');
+                    piece.classList.add('piece', 'redPiece');
+                    piece.setAttribute('draggable', true);
+                    piece.addEventListener('click', selectPiece);
+                    square.appendChild(piece);
+                } else if (row > 4) {
+                    const piece = document.createElement('div');
+                    piece.classList.add('piece', 'blackPiece');
+                    piece.setAttribute('draggable', true);
+                    piece.addEventListener('click', selectPiece);
+                    square.appendChild(piece);
+                }
+            }
+
+            square.addEventListener('click', movePiece);
+            gameBoard.appendChild(square);
+        }
+    }
+}
+
+// Select a piece to move
+function selectPiece(event) {
+    const piece = event.target;
+    if (selectedPiece) {
+        selectedPiece.classList.remove('selected');
+    }
+    selectedPiece = piece;
+    piece.classList.add('selected');
+}
+
+// Move the selected piece
+function movePiece(event) {
+    const square = event.target;
+    if (!selectedPiece || !square.classList.contains('blackSquare')) {
+        return; // Only move to black squares
+    }
+
+    const currentSquare = selectedPiece.parentElement;
+    currentSquare.removeChild(selectedPiece);
+    square.appendChild(selectedPiece);
+    selectedPiece.classList.remove('selected');
+    selectedPiece = null;
+}
+
+initBoard();
